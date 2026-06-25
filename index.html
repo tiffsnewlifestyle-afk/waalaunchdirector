@@ -1,4 +1,5 @@
-updated
+
+
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:var(--font-sans)}
@@ -398,27 +399,7 @@ body{font-family:var(--font-sans)}
 </div>
 
 <script>
-const WAA_SYSTEM = `You are the Wealth Strategist Launch Director for the Wealth Architects Alliance (WAA).
 
-WAA Constitution Highlights:
-- Mission: Helping Families Build Wealth, Protection, Opportunity & Legacy
-- PRIMARY GOAL: Help every new Wealth Strategist achieve their first $10,000 month
-- Key roles: Wealth Strategist, Wealth Architect, Executive Wealth Architect
-- Key terms: Partner (not upline), Mentor, Non-Licensed Agent, Training Policy Program (10 policies, 70/30 split)
-- Daily formula: 10-10-10 (10 calls, 10 texts, 10 social engagements per day)
-- Training platform: WealthMakers University at www.wealthmakers.net
-- Specializations: IUL, Annuity, Family Legacy, Beauty & Barber, Daycare, Realtor, Builder, Home Health, Faith Community, Small Business
-
-Niche verticals: Beauty/Barber/Wellness, Daycare/Early Childhood, Faith-Based, Real Estate, Small Business.
-
-Coach Tiff Presentation Framework: Story → Problem → Cost of Inaction → Education → Solution → Example → Call to Action
-
-Decision framework (prioritize recommendations that):
-1. Generate appointments 2. Generate policies 3. Generate referrals 4. Generate recruiting 5. Support WAA mission 6. Can be automated 7. Can be replicated nationally
-
-Always think as a Director: complete the task, identify opportunities, recommend next actions, suggest automation and revenue opportunities.
-
-Be warm, motivating, specific, and action-oriented. Keep responses under 400 words unless a detailed plan is requested.`;
 
 let state = {
   agent: {name:'',email:'',phone:'',status:'',exp:'',spec:'',goal:'',incomeGoal:0},
@@ -540,30 +521,104 @@ function updateBlueprintProfile(){
   el.textContent=`Agent: ${state.agent.name}\nStatus: ${state.agent.status||'Not set'}\nExperience: ${state.agent.exp||'Not set'}\nSpecialization: ${state.agent.spec||'Not set'}\nIncome Goal: $${(state.agent.incomeGoal||0).toLocaleString()}/month\nPrimary Goal: ${state.agent.goal||'Not set'}`;
 }
 
-async function genBlueprint(){
+function genBlueprint(){
   const btn=document.getElementById('bp-btn');
   btn.disabled=true; btn.textContent='Generating...';
   document.getElementById('blueprint-result-card').style.display='block';
   const res=document.getElementById('blueprint-result');
   res.className='ai-box loading'; res.textContent='Building your personalized blueprint...';
-  const prompt=`Create a personalized Wealth Strategist Success Blueprint for:
-Name: ${state.agent.name||'New Agent'}
-Status: ${state.agent.status||'Newly Licensed'}
-Experience: ${state.agent.exp||'Brand New'}
-Specialization: ${state.agent.spec||'IUL Wealth Strategist'}
-Monthly Income Goal: $${state.agent.incomeGoal||10000}
-Primary Goal: ${state.agent.goal||'Build a sustainable business'}
+  setTimeout(()=>{
+    const name=state.agent.name||'Wealth Strategist';
+    const goal=state.agent.incomeGoal||10000;
+    const spec=state.agent.spec||'IUL Wealth Strategist';
+    const exp=state.agent.exp||'Brand New (0–6 months)';
+    const status=state.agent.status||'Newly Licensed';
+    const personalGoal=state.agent.goal||'Build a sustainable financial services business';
+    const avgComm=595;
+    const policies=Math.ceil(goal/avgComm);
+    const appts=Math.ceil(policies*2.5);
+    const apptDay=Math.ceil(appts/20);
+    const leads=Math.ceil(apptDay*2.5);
+    const specNiche={
+      'IUL Wealth Strategist':'families looking to build tax-free retirement income',
+      'Annuity Wealth Strategist':'pre-retirees and retirees seeking guaranteed income',
+      'Family Legacy Strategist':'parents and grandparents focused on generational wealth',
+      'Beauty & Barber Wealth Strategist':'beauty and barber professionals, salon owners, and booth renters',
+      'Daycare Wealth Strategist':'daycare owners, childcare centers, and early childhood educators',
+      'Realtor Wealth Strategist':'real estate agents, brokers, and investors',
+      'Builder & Contractor Wealth Strategist':'builders, contractors, and construction business owners',
+      'Home Health Wealth Strategist':'home health agency owners and care professionals',
+      'Faith Community Wealth Strategist':'faith-based community members and church families',
+      'Small Business Wealth Strategist':'small business owners and entrepreneurs'
+    };
+    const niche=specNiche[spec]||'families and business owners';
+    const isNew=exp.includes('Brand New')||exp.includes('0–6');
+    const trainingNote=isNew?`\n⚠️  TRAINING POLICY TRACK: As a ${status}, your first focus is completing 10 Training Policies. You earn 70% commission on each — your Mentor receives 30% in exchange for their support and guidance. This builds your skill, confidence, and income simultaneously.\n`:'';
+    const blueprint=`🏆 WEALTH STRATEGIST SUCCESS BLUEPRINT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Agent: ${name}
+Specialization: ${spec}
+Monthly Income Goal: $${goal.toLocaleString()}
+Primary Goal: ${personalGoal}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+${trainingNote}
+📊 YOUR INCOME MATH
+To earn $${goal.toLocaleString()}/month you need:
+• ${policies} policies per month
+• ${appts} appointments per month (${apptDay}/day)
+• ${leads} new leads per day minimum
+• 10 calls + 10 texts + 10 social engagements — every single day
 
-Create a complete blueprint with: Top 3 Immediate Actions, Specialization Strategy, Daily Activity Targets, 30/60/90 Day milestones, and a Social Media Launch plan for their niche. Be specific, motivating, and action-oriented.`;
-  try{
-    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,system:WAA_SYSTEM,messages:[{role:'user',content:prompt}]})});
-    const d=await r.json();
-    const text=d.content?.filter(c=>c.type==='text').map(c=>c.text).join('\n')||'Unable to generate blueprint. Please try again.';
-    res.className='ai-box'; res.textContent=text;
-  }catch(e){
-    res.className='ai-box'; res.textContent='Connection error. Please check your network and try again.';
-  }
-  btn.disabled=false; btn.textContent='Regenerate Blueprint ↗';
+🎯 TOP 3 IMMEDIATE ACTIONS
+1. Complete your Onboarding Checklist — every unchecked item is money left on the table
+2. Build your First 100 List today — write every name you know, no filter
+3. Make your first 10 calls this week — start with the warmest relationships first
+
+🏆 YOUR SPECIALIZATION STRATEGY — ${spec.toUpperCase()}
+Your niche: ${niche}
+• Position yourself as the go-to Wealth Strategist for ${niche.split(',')[0]}
+• Join 3 Facebook groups or community spaces where your niche gathers
+• Create content that educates your niche on wealth-building specific to their world
+• Partner with 2–3 professionals in your niche who can refer clients to you
+• Offer a free "Wealth Snapshot" conversation to get your first appointments
+
+📱 SOCIAL MEDIA LAUNCH PLAN
+Week 1: Post your "why" story — why you joined WAA and who you serve
+Week 2: Educational post — one wealth tip specific to your niche
+Week 3: Success story or testimonial (ask your Mentor for examples)
+Week 4: Call to action — invite followers to a free wealth conversation
+Daily: Engage with 10 people in your niche community (comment, share, respond)
+
+📅 30 / 60 / 90 DAY MILESTONES
+
+30 Days:
+• Complete all onboarding checklist items
+• First 100 List fully built and outreach started
+• ${isNew?'Submit first 3 Training Policy applications':'Hold 10+ appointments'}
+• 10·10·10 formula running daily without exception
+• Connected with your Partner/Mentor weekly
+
+60 Days:
+• ${isNew?'10 Training Policies submitted — graduate from Training Track':'$'+Math.round(goal*0.75).toLocaleString()+' month achieved'}
+• Referral pipeline active — 2+ referrals from every client
+• Social media content calendar running consistently
+• First niche partnership established
+• WealthMakers University modules completed
+
+90 Days:
+• $${goal.toLocaleString()}/month achieved or on track
+• Team of 2+ recruits if desired
+• Speaking at or hosting a community wealth event
+• Systems and routines locked in for long-term growth
+• Ready to mentor the next new Wealth Strategist
+
+🔥 REMEMBER
+People stay where they succeed. You succeed when you have a plan. This IS your plan. Execute it daily. Your first $10,000 month is not a dream — it is a math problem you now know how to solve.
+
+Visit WealthMakers University at wealthmakers.net for training that supports every step above.`;
+    res.className='ai-box'; res.textContent=blueprint;
+    btn.disabled=false; btn.textContent='Regenerate Blueprint ↗';
+  },800);
 }
 
 function renderDayGrid(){
@@ -694,23 +749,59 @@ function updateOnboardProgress(){
   document.getElementById('onboard-pct').textContent=`${pct}% complete (${done}/${CHECKLIST_ITEMS.length})`;
 }
 
-async function sendChat(){
+function getCoachResponse(msg){
+  const m=msg.toLowerCase();
+  const name=state.agent.name?state.agent.name.split(' ')[0]:'friend';
+  const goal=state.agent.incomeGoal||10000;
+  const spec=state.agent.spec||'IUL Wealth Strategist';
+  const avgComm=595;
+  const policies=Math.ceil(goal/avgComm);
+  const appts=Math.ceil(policies*2.5);
+  if(m.includes('10·10·10')||m.includes('10-10-10')||m.includes('routine')||m.includes('daily')){
+    return `Here's your 10·10·10 daily routine, ${name}:\n\n📞 10 CALLS — Start every morning calling your warmest contacts first. Use a simple script: "Hey [name], I just started helping families build wealth and protection and I'd love to share what I'm doing. Do you have 15 minutes this week?"\n\n💬 10 TEXTS — Text people who might not answer calls. Keep it personal: "Hey! I've been thinking about you. I'm doing something exciting and I think it could really benefit your family. Can we connect this week?"\n\n📱 10 SOCIAL ENGAGEMENTS — Comment meaningfully on posts in your niche community, share educational content, and respond to every comment on your own posts.\n\nDo this every single day, 5 days a week, and your pipeline will never run dry. Consistency beats intensity every time.`;
+  }
+  if(m.includes('script')||m.includes('call')||m.includes('what to say')){
+    return `Here's a proven call script for your first contacts:\n\n"Hey [Name], this is ${name}! How are you?\n\n[Listen and respond warmly]\n\nHey, I wanted to reach out because I just started doing something I'm really excited about. I'm now a Wealth Strategist helping families build wealth, protection, and legacy — and honestly I thought of you immediately because [personal reason].\n\nI'm not here to sell you anything today — I just want to share what I'm learning and get your thoughts. Do you have about 15-20 minutes this week to grab a coffee or jump on a quick call?"\n\nKey tips:\n• Be enthusiastic but not pushy\n• Lead with the relationship, not the product\n• Your goal is an appointment, not a sale on the call\n• If they say no, ask for a referral: "No worries! Do you know anyone who might benefit from learning more about building family wealth?"`;
+  }
+  if(m.includes('iul')||m.includes('indexed universal life')){
+    return `Here's how to explain IUL simply:\n\n"An IUL — Indexed Universal Life — is a life insurance policy that also builds cash value tied to the stock market index, like the S&P 500. Here's what makes it powerful:\n\n✅ Your money GROWS when the market goes up\n✅ Your money is PROTECTED when the market goes down (0% floor)\n✅ The growth is TAX-FREE\n✅ You can ACCESS the cash while you're alive\n✅ Your family gets a TAX-FREE death benefit\n\nThink of it as a savings account on steroids, with life insurance protection built in.\n\nThe simplest way to say it: 'It's how the wealthy build tax-free wealth that their family can benefit from both now and in the future.'"\n\nPractice this until you can say it in under 60 seconds with confidence.`;
+  }
+  if(m.includes('social media')||m.includes('post')||m.includes('content')||m.includes('facebook')||m.includes('instagram')){
+    return `Here's your social media plan for this week as a ${spec}:\n\nMONDAY — Your Story Post\n"I made a decision that's going to change my family's future. I'm now a Wealth Strategist with Wealth Architects Alliance, and I'm on a mission to help families build wealth, protection, and legacy. If you've ever wondered how to build real financial security, let's talk. 💰"\n\nWEDNESDAY — Education Post\nShare one wealth tip relevant to your niche. Example: "Did you know that business owners can use an IUL to create a tax-free retirement fund? Most people are leaving money on the table. DM me to learn more."\n\nFRIDAY — Call to Action\n"I'm offering FREE 20-minute Wealth Strategy consultations this week. Limited spots available. Comment 'WEALTH' below or DM me to grab yours."\n\nDAILY — Engage with 10 people in your niche community. Comment, share, and respond. Show up consistently and the leads will come.`;
+  }
+  if(m.includes('objection')||m.includes('no')||m.includes('not interested')||m.includes('overcome')){
+    return `Here are the top objections and how to handle them:\n\n❌ "I can't afford it"\n✅ "I understand — that's actually why I wanted to talk to you. Most of my clients felt the same way until they saw how this works. Can I show you how families are doing this for as little as $50/month?"\n\n❌ "I need to think about it"\n✅ "Of course! What specifically would you like to think about? I want to make sure I've answered all your questions before we wrap up."\n\n❌ "I already have life insurance"\n✅ "That's great! Most people I work with already have some coverage. I'm not here to replace what you have — I want to make sure it's actually working as hard as possible for your family. Can I take a quick look?"\n\n❌ "I'm not interested"\n✅ "No problem at all! Hey, do you know anyone who's been talking about building more financial security for their family? I'd love a referral if you think of someone."\n\nRemember: objections mean they're still talking. Keep asking questions.`;
+  }
+  if(m.includes('next action')||m.includes('what should i do')||m.includes('next step')){
+    const p=Math.ceil(goal/avgComm);
+    return `${name}, here are your next 3 actions right now:\n\n1️⃣ OPEN YOUR FIRST 100 LIST — Write 20 names in the next 20 minutes. Don't overthink it. Family, friends, coworkers, former classmates, neighbors. Every name matters.\n\n2️⃣ MAKE 3 CALLS TODAY — Not 10. Just 3. Start with the person most likely to say yes. Build momentum with a small win today.\n\n3️⃣ POST ON SOCIAL MEDIA TONIGHT — Share your "I just started something exciting" post on Facebook and Instagram. You have connections who need what you offer — they just don't know you offer it yet.\n\nYour income goal of $${goal.toLocaleString()}/month requires ${p} policies. That starts with one conversation today. Go make it happen.`;
+  }
+  if(m.includes('training polic')||m.includes('mentor')||m.includes('70/30')){
+    return `The Training Policy Program is designed to help you build skills and income at the same time.\n\nHere's how it works:\n\n🎯 GOAL: Write 10 Training Policies\n💰 YOUR CUT: 70% of the commission on each policy\n🤝 MENTOR'S CUT: 30% — in exchange for their active support, guidance, and investment in your success\n\nThis is not a penalty. This is your fast track. Your Mentor has done this before and their involvement makes you better, faster.\n\nOnce you complete your 10 Training Policies:\n✅ You graduate to full commission\n✅ You have real experience and confidence\n✅ You have 10 clients who can refer you to others\n✅ You're ready to mentor the next new Wealth Strategist\n\nFocus on the Training Policy track as your #1 priority right now. Everything else is secondary.`;
+  }
+  if(m.includes('recruit')||m.includes('team')||m.includes('build a team')){
+    return `Building your team starts with building yourself first, ${name}.\n\nHere's the recruiting framework:\n\n🌱 PHASE 1 — Plant seeds now\nAs you're making your 10·10·10 calls, listen for people who are entrepreneurial, unhappy in their job, or looking for more income. Make a mental note. Don't pitch yet.\n\n📅 PHASE 2 — Share the opportunity naturally\nOnce you have a few wins, share your story: "I've been doing this for [X weeks] and I've already [result]. I'm actually looking for 2-3 people to join my team. Is that something you'd want to learn more about?"\n\n🎯 PHASE 3 — Invite them to a presentation\nDon't try to explain everything yourself. Use tools, training events, and your Partner to help close the conversation.\n\n⭐ WHO TO LOOK FOR:\n• Driven and coachable\n• Good communicator\n• Entrepreneurial mindset\n• Connected in their community\n\nRemember: recruiting is a byproduct of activity. The more people you talk to, the more natural recruiting opportunities appear.`;
+  }
+  const defaults=[
+    `Great question, ${name}! Here's what the WAA Constitution says about this: focus on activities that generate appointments first, policies second, and referrals third. Everything else is secondary. What specific part of your business can I help you with right now?`,
+    `${name}, the answer almost always comes back to the 10·10·10 formula. Are you running it consistently? 10 calls, 10 texts, 10 social engagements every single day. That activity is the engine that drives everything else. Tell me what's your biggest challenge right now and let's solve it.`,
+    `That's a great area to focus on! The WAA mission is to help families build wealth, protection, opportunity, and legacy. As a ${spec}, you're in a powerful position to do exactly that. What would help you most — lead generation, product knowledge, presentation skills, or something else?`,
+    `${name}, remember this: people stay where they succeed, and you succeed when you have a plan. You HAVE a plan. The question is execution. What's the one thing stopping you from taking your next step today?`
+  ];
+  return defaults[Math.floor(Math.random()*defaults.length)];
+}
+
+function sendChat(){
   const input=document.getElementById('chat-input');
   const msg=input.value.trim();
   if(!msg) return;
   input.value='';
   addChatMsg(msg,'user');
   const thinkingEl=addChatMsg('Thinking...','ai');
-  state.chatHistory.push({role:'user',content:msg});
-  try{
-    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,system:WAA_SYSTEM,messages:state.chatHistory})});
-    const d=await r.json();
-    const reply=d.content?.filter(c=>c.type==='text').map(c=>c.text).join('\n')||'Sorry, I had trouble responding. Please try again.';
+  setTimeout(()=>{
+    const reply=getCoachResponse(msg);
     thinkingEl.textContent=reply;
-    state.chatHistory.push({role:'assistant',content:reply});
-  }catch(e){
-    thinkingEl.textContent='Connection error. Please check your network and try again.';
-  }
+  },600);
 }
 
 function addChatMsg(text,role){
